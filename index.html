@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Mapa de Salud Funcional - descubre por dónde empezar.">
+<title>¿Por dónde empezar? | Salud Funcional</title>
+<style>
+:root{
+  --sage:#8fa89a; --sage-dark:#61786b; --cream:#f7f4ee;
+  --beige:#e8dfd1; --text:#34413a; --white:#fff;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--cream);color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;line-height:1.5;
+}
+.container{max-width:680px;margin:auto;padding:22px 18px 40px}
+.card{
+  background:var(--white);border-radius:22px;padding:28px 22px;
+  box-shadow:0 8px 30px rgba(52,65,58,.08);margin-top:16px;
+}
+header{text-align:center;padding:24px 8px 8px}
+.logo{
+  width:64px;height:64px;border-radius:50%;margin:0 auto 15px;
+  background:var(--sage);display:flex;align-items:center;justify-content:center;
+  color:white;font-size:27px;
+}
+h1{font-size:30px;line-height:1.15;margin:8px 0;color:var(--sage-dark)}
+h2{font-size:23px;line-height:1.2;margin:0 0 10px;color:var(--sage-dark)}
+p{margin:8px 0 15px}
+.subtitle{font-size:17px}
+.small{font-size:13px;color:#6c766f}
+.progress{height:7px;background:#e5e2dc;border-radius:10px;overflow:hidden;margin:8px 0 24px}
+.progress-bar{height:100%;background:var(--sage);width:20%;transition:.25s}
+.question-number{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--sage-dark);font-weight:bold}
+.options{display:grid;gap:11px;margin-top:20px}
+button{
+  width:100%;border:0;border-radius:15px;padding:16px 15px;text-align:left;
+  background:#f4f2ed;color:var(--text);font-size:16px;cursor:pointer;
+  transition:.18s;box-shadow:0 1px 0 rgba(0,0,0,.03);
+}
+button:hover{background:var(--beige);transform:translateY(-1px)}
+.primary{
+  background:var(--sage);color:white;text-align:center;font-weight:bold;
+}
+.primary:hover{background:var(--sage-dark)}
+.back{background:transparent;color:var(--sage-dark);text-align:center;font-size:14px;box-shadow:none}
+.result-icon{font-size:42px;margin-bottom:5px}
+.result-tag{
+  display:inline-block;background:#edf1ee;color:var(--sage-dark);
+  border-radius:20px;padding:6px 11px;font-size:12px;font-weight:bold;
+  text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px
+}
+.cta{
+  background:var(--sage-dark);color:white;border-radius:18px;padding:20px;
+  margin-top:22px;text-align:center
+}
+.cta p{color:white}
+.footer{text-align:center;padding:22px 5px;font-size:12px;color:#78817c}
+.hide{display:none}
+a{text-decoration:none}
+ul{padding-left:20px}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">🧭</div>
+    <h1>¿Por dónde empezar?</h1>
+    <p class="subtitle">Descubre tu posible punto de partida en salud funcional.</p>
+    <p class="small">Responde a 4 preguntas rápidas · 1 minuto</p>
+  </header>
+
+  <main class="card">
+    <div class="progress"><div id="progressBar" class="progress-bar"></div></div>
+    <div id="app"></div>
+  </main>
+
+  <div class="footer">
+    Orientación informativa. No sustituye una valoración médica ni un diagnóstico.
+  </div>
+</div>
+
+<script>
+const questions = [
+ {
+  title:"¿Qué te ha traído hasta aquí?",
+  options:[
+   ["Síntomas que no termino de comprender","symptoms"],
+   ["Tengo analíticas y quiero entenderlas mejor","labs"],
+   ["Problemas digestivos o de microbiota","digestive"],
+   ["Quiero mejorar mi alimentación y prevenir","nutrition"],
+   ["Quiero mejorar energía, metabolismo o bienestar","energy"],
+   ["Es para mi hijo/a","child"]
+  ]
+ },
+ {
+  title:"¿Qué área notas más desequilibrada?",
+  options:[
+   ["🦠 Digestión y microbiota","digestive"],
+   ["🔥 Inflamación","inflammation"],
+   ["⚡ Energía y metabolismo","energy"],
+   ["🧠 Cerebro, estrés y descanso","brain"],
+   ["🥗 Nutrición","nutrition"],
+   ["📊 Analíticas y marcadores","labs"]
+  ]
+ },
+ {
+  title:"¿Tienes analíticas recientes?",
+  options:[
+   ["Sí, y quiero comprenderlas","labs"],
+   ["No, pero tengo síntomas o una preocupación","symptoms"],
+   ["No, quiero empezar desde la alimentación y los hábitos","nutrition"]
+  ]
+ },
+ {
+  title:"¿Qué buscas principalmente?",
+  options:[
+   ["🔎 Comprender qué puede estar ocurriendo","understand"],
+   ["🎯 Mejorar con un plan personalizado","plan"],
+   ["🧩 Abordar un problema concreto","specific"],
+   ["🌱 Prevenir y optimizar","prevent"]
+  ]
+ }
+];
+
+let step=0;
+let scores={};
+
+function addScore(key){
+  scores[key]=(scores[key]||0)+1;
+}
+function choose(key){
+  addScore(key);
+  if(step<questions.length-1){step++;render();}
+  else showResult();
+}
+function render(){
+  const q=questions[step];
+  document.getElementById("progressBar").style.width=((step+1)/questions.length*100)+"%";
+  document.getElementById("app").innerHTML=`
+    <div class="question-number">Pregunta ${step+1} de ${questions.length}</div>
+    <h2>${q.title}</h2>
+    <p class="small">Elige la opción que más se acerque a tu situación.</p>
+    <div class="options">
+      ${q.options.map(o=>`<button onclick="choose('${o[1]}')">${o[0]}</button>`).join("")}
+    </div>
+    ${step>0?'<button class="back" onclick="back()">← Volver</button>':""}
+  `;
+}
+function back(){
+  step=Math.max(0,step-1);
+  render();
+}
+function best(){
+  const priority=[
+    ["child","child"],["digestive","digestive"],["labs","labs"],
+    ["nutrition","nutrition"],["energy","energy"],["inflammation","inflammation"],
+    ["brain","brain"],["symptoms","symptoms"],["plan","plan"],
+    ["specific","specific"],["understand","understand"],["prevent","prevent"]
+  ];
+  let bestKey="understand", max=-1;
+  priority.forEach(([k])=>{if((scores[k]||0)>max){max=scores[k]||0;bestKey=k;}});
+  return bestKey;
+}
+const results={
+ labs:{
+  icon:"📊", tag:"Tu punto de partida",
+  title:"Estudio funcional",
+  text:"Si tu principal interés es comprender tus analíticas, un estudio funcional puede ayudarte a ordenar la información y detectar áreas que merecen atención.",
+  cta:"Quiero información sobre el estudio funcional"
+ },
+ digestive:{
+  icon:"🦠", tag:"Tu punto de partida",
+  title:"Salud digestiva y microbiota",
+  text:"Si lo que más te preocupa es la digestión, podemos empezar por revisar alimentación, hábitos y factores relacionados con el equilibrio digestivo y la microbiota.",
+  cta:"Quiero hablar sobre mi caso digestivo"
+ },
+ nutrition:{
+  icon:"🥗", tag:"Tu punto de partida",
+  title:"Plan nutricional integrativo",
+  text:"Si quieres mejorar tu alimentación pero prefieres hacerlo con una estrategia adaptada a ti, el punto de partida puede ser un plan nutricional integrativo.",
+  cta:"Quiero información sobre el plan"
+ },
+ energy:{
+  icon:"⚡", tag:"Tu punto de partida",
+  title:"Valoración funcional",
+  text:"Energía, metabolismo y bienestar están conectados. Una valoración funcional puede ayudarte a identificar qué áreas conviene priorizar.",
+  cta:"Quiero saber por dónde empezar"
+ },
+ inflammation:{
+  icon:"🔥", tag:"Tu punto de partida",
+  title:"Valoración funcional integrativa",
+  text:"Si tu preocupación principal es la inflamación, podemos valorar alimentación, estilo de vida y marcadores relevantes para establecer prioridades.",
+  cta:"Quiero información"
+ },
+ brain:{
+  icon:"🧠", tag:"Tu punto de partida",
+  title:"Valoración funcional",
+  text:"Si buscas mejorar descanso, estrés, rendimiento o bienestar cerebral, podemos empezar identificando los factores que merecen mayor atención.",
+  cta:"Quiero información"
+ },
+ child:{
+  icon:"👨‍👩‍👧", tag:"Tu punto de partida",
+  title:"Salud infantil",
+  text:"Para niños y adolescentes, el abordaje debe adaptarse a su edad, necesidades y contexto. Podemos orientarte sobre cuál podría ser el primer paso.",
+  cta:"Quiero hablar sobre mi hijo/a"
+ },
+ symptoms:{
+  icon:"🧭", tag:"Tu punto de partida",
+  title:"Valoración funcional",
+  text:"Cuando existen síntomas y no sabes por dónde empezar, una valoración funcional puede ayudar a ordenar la información y establecer prioridades.",
+  cta:"Quiero saber por dónde empezar"
+ },
+ understand:{
+  icon:"🔎", tag:"Tu objetivo",
+  title:"Comprender",
+  text:"Tu primer paso puede ser una valoración que te ayude a organizar la información disponible y entender qué áreas conviene estudiar con más detalle.",
+  cta:"Quiero orientación"
+ },
+ plan:{
+  icon:"🎯", tag:"Tu objetivo",
+  title:"Plan personalizado",
+  text:"Si lo que buscas es pasar de la información a la acción, podemos valorar cuál sería la estrategia nutricional más adecuada para tu situación.",
+  cta:"Quiero información"
+ },
+ specific:{
+  icon:"🧩", tag:"Tu objetivo",
+  title:"Abordar un problema concreto",
+  text:"Podemos empezar por definir el problema principal, revisar la información disponible y establecer prioridades de trabajo.",
+  cta:"Quiero hablar de mi caso"
+ },
+ prevent:{
+  icon:"🌱", tag:"Tu objetivo",
+  title:"Prevenir y optimizar",
+  text:"Si tu objetivo es cuidar tu salud antes de que aparezcan problemas, podemos empezar revisando tus hábitos, alimentación y marcadores disponibles.",
+  cta:"Quiero información"
+ }
+};
+
+function showResult(){
+  const r=results[best()];
+  document.getElementById("progressBar").style.width="100%";
+  const msg=encodeURIComponent("Hola Nayra, he hecho el mapa «¿Por dónde empezar?» en la feria y me ha salido como punto de partida: "+r.title+". Me gustaría recibir información.");
+  document.getElementById("app").innerHTML=`
+    <div class="result-icon">${r.icon}</div>
+    <div class="result-tag">${r.tag}</div>
+    <h2>${r.title}</h2>
+    <p>${r.text}</p>
+    <div class="cta">
+      <strong>¿Quieres saber cuál sería tu siguiente paso?</strong>
+      <p>Escríbeme por WhatsApp y cuéntame brevemente qué te preocupa.</p>
+      <a href="https://wa.me/34681029104?text=${msg}" target="_blank" rel="noopener">
+        <button class="primary">${r.cta} →</button>
+      </a>
+    </div>
+    <div class="options" style="margin-top:12px">
+      <button class="back" onclick="restart()">↻ Hacer el mapa de nuevo</button>
+    </div>
+  `;
+}
+function restart(){step=0;scores={};render();}
+render();
+</script>
+</body>
+</html>
