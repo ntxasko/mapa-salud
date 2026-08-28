@@ -242,7 +242,7 @@ const results={
 function showResult(){
   const r=results[best()];
   document.getElementById("progressBar").style.width="100%";
-  const msg=encodeURIComponent("Hola Nayra, he realizado el mapa «¿Por dónde empezar?» y mi resultado ha sido: "+r.title+". Me gustaría recibir más información.");
+  const msg=encodeURIComponent("Hola Nayra, acabo de realizar el Mapa Funcional y mi punto de partida es: "+r.title+". Me gustaría saber cómo puedo continuar y recibir más información sobre el método Bioreset.");
   document.getElementById("app").innerHTML=`
     <div class="result-icon">${r.icon}</div>
     <div class="result-tag">${r.tag}</div>
