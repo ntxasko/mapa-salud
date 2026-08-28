@@ -242,7 +242,7 @@ const results={
 function showResult(){
   const r=results[best()];
   document.getElementById("progressBar").style.width="100%";
-  const msg=encodeURIComponent("Hola Nayra, he hecho el mapa «¿Por dónde empezar?» en la feria y me ha salido como punto de partida: "+r.title+". Me gustaría recibir información.");
+  const msg=encodeURIComponent("Hola Nayra, he realizado el mapa «¿Por dónde empezar?» y mi resultado ha sido: "+r.title+". Me gustaría recibir más información.");
   document.getElementById("app").innerHTML=`
     <div class="result-icon">${r.icon}</div>
     <div class="result-tag">${r.tag}</div>
